@@ -10,7 +10,9 @@ RUN cp .env.example .env
 RUN composer install --no-dev --optimize-autoloader
 
 # Install supervisor yang belum ada di base image
-RUN apt-get update && apt-get install -y supervisor \
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g; s|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php.ini /etc/php/8.0/cli/conf.d/99-custom.ini
