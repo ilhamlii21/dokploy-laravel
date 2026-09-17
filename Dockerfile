@@ -9,11 +9,12 @@ RUN cp .env.example .env
 
 RUN composer install --no-dev --optimize-autoloader
 
-# Install supervisor yang belum ada di base image
-RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g; s|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends supervisor \
-    && rm -rf /var/lib/apt/lists/*
+# Install supervisor lewat pip (hindari masalah repo Debian EOL)
+RUN pip3 install supervisor
+
+# Buat config utama supervisor yang include semua file di conf.d
+RUN mkdir -p /etc/supervisor/conf.d \
+    && echo "[include]\nfiles = /etc/supervisor/conf.d/*.conf" > /etc/supervisord.conf
 
 COPY docker/php.ini /etc/php/8.0/cli/conf.d/99-custom.ini
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
