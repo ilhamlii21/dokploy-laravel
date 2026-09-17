@@ -4,7 +4,14 @@ WORKDIR /var/www/html
 
 COPY . .
 
+# Buat .env dari .env.example kalau belum ada
+RUN cp .env.example .env
+
 RUN composer install --no-dev --optimize-autoloader
+
+# Install supervisor yang belum ada di base image
+RUN apt-get update && apt-get install -y supervisor \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php.ini /etc/php/8.0/cli/conf.d/99-custom.ini
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf

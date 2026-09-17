@@ -19,7 +19,7 @@ fi
 
 cat .env | grep -q APP_KEY=base64
 if [ ! "$?" -eq 0 ]; then
-    php artisan key:generate
+    php artisan key:generate --force
 fi
 
 if [ $# -gt 0 ];then
